@@ -1,0 +1,23 @@
+[toplevel]
+
+whoami = sts get-caller-identity
+
+# Get AWS Account ID
+
+id = sts get-caller-identity \
+  --query 'Account' \
+  --output text
+
+# Get ARN of user or role that executes the cli command
+
+myarn = sts get-caller-identity \
+  --query 'Arn' \
+  --output text
+
+# List Lmabda Functions by runtime
+
+lambda-fn-runtime =
+  !f() {
+    aws lambda list-functions \
+    --query "Functions[?contains(to_string(Runtime),\`${1}\`)]"
+  }; f
