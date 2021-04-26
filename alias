@@ -15,9 +15,28 @@ myarn = sts get-caller-identity \
   --output text
 
 # List Lmabda Functions by runtime
+# 1st parameter: <runtime>
+#
+# e.g.
+# aws lambda-fn-runtime python3
 
 lambda-fn-runtime =
   !f() {
     aws lambda list-functions \
     --query "Functions[?contains(to_string(Runtime),\`${1}\`)]"
+  }; f
+
+# Login to ECR
+# 1st parameter: <region>
+#
+# e.g.
+# aws ecr-login ap-northeast-1
+
+ecr-login =
+  !f() {
+    aws ecr get-login-password \
+      --region "${1}" \
+      | docker login \
+      --username AWS \
+      --password-stdin $(aws id).dkr.ecr.${1}.amazonaws.com
   }; f
