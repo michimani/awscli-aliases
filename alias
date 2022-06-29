@@ -55,3 +55,26 @@ ecr-login =
       --username AWS \
       --password-stdin $(aws id).dkr.ecr.${1}.amazonaws.com
   }; f
+
+# Switch to other Role
+# 1st parameter: <path>
+# 2nd parameter: <role_name>
+#
+# e.g.
+# aws switch-role '/demo/' 'hoge-role'
+
+switch-role =
+  !f() {
+    SWITCH_CMD=$( \
+      aws sts assume-role \
+      --role-arn $( \
+        aws iam list-roles \
+        --path-prefix "${1}" \
+        --query "Roles[?contains(to_string(RoleName), '${2}')].Arn" \
+        --output text) \
+      --role-session-name "switch-to-${2}" \
+      --query 'Credentials.join(``,[`export AWS_ACCESS_KEY_ID=\"`,AccessKeyId,`\" AWS_SECRET_ACCESS_KEY=\"`,SecretAccessKey,`\" AWS_SESSION_TOKEN=\"`,SessionToken,`\"`])' \
+      --output text) \
+    && eval ${SWITCH_CMD} \
+    && aws sts get-caller-identity
+  }; f
