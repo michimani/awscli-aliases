@@ -69,7 +69,7 @@ switch-role =
       --role-arn $( \
         aws iam get-role \
         --role-name "${1}" \
-        --query "Role.Arn" \
+        --query 'Role.Arn' \
         --output text) \
       --role-session-name "switch-to-${1}" \
       --query 'Credentials.join(``,[`export AWS_ACCESS_KEY_ID=\"`,AccessKeyId,`\" AWS_SECRET_ACCESS_KEY=\"`,SecretAccessKey,`\" AWS_SESSION_TOKEN=\"`,SessionToken,`\"`])' \
